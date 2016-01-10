@@ -17,8 +17,4 @@ function noInstanceofGuard(context) {
     };
 }
 
-module.exports.schema = [{
-    'type': 'object',
-    'properties': {},
-    'additionalProperties': false
-}];
+module.exports.schema = [];

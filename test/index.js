@@ -4,6 +4,7 @@ var console = require('console');
 var RuleTester = require('eslint').RuleTester;
 
 var noInstanceofGuard = require('../rules/no-instanceof-guard.js');
+var noSelfInConstructor = require('../rules/no-self-in-constructor.js');
 var checkFunctionInline = require('../rules/check-function-inline.js');
 
 var ruleTester = new RuleTester();
@@ -59,6 +60,43 @@ ruleTester.run('check-function-inline', checkFunctionInline, {
         ].join('\n'),
         errors: [{
             message: 'Function exceeds default limit by 37 characters'
+        }]
+    }]
+});
+
+ruleTester.run('no-self-in-constructor', noSelfInConstructor, {
+    valid: [
+        [
+            'function Foo() {',
+            '    this.foo = "bar";',
+            '}'
+        ].join('\n'),
+        [
+            'Foo.prototype.foo = function foo() {',
+            '    var self = this;',
+            '    self.bar = "bar";',
+            '};'
+        ].join('\n')
+    ],
+    invalid: [{
+        code: [
+            'function Foo() {',
+            '    var self = this;',
+            '    self.foo = "bar";',
+            '}'
+        ].join('\n'),
+        errors: [{
+            message: 'expected no self = this in constructor Foo'
+        }]
+    }, {
+        code: [
+            'module.exports = function Foo() {',
+            '    var self = this;',
+            '    self.foo = "bar";',
+            '};'
+        ].join('\n'),
+        errors: [{
+            message: 'expected no self = this in constructor Foo'
         }]
     }]
 });
