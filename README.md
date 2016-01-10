@@ -8,29 +8,47 @@
 
 <!-- [![NPM][npm-png]][npm] -->
 
-A set of eslint rules for performant JS
+A set of custom plugins to enforce high performance JS
 
 ## Example
 
 ```js
-var eslintPluginPerfStandard = require("eslint-plugin-perf-standard");
-
-// TODO. Show example
+{
+    "rules": {
+        "perf-standard/no-instanceof-guard": 2,
+        "perf-standard/no-self-in-constructor": 2,
+        "perf-standard/check-function-inline": 1
+    }
+}
 ```
 
-## Docs
+Currently the plugins we have are:
 
-### `var someValue = eslintPluginPerfStandard(/*arguments*/)`
+### `no-instanceof-gaurd`
 
-<!--
-  This is a jsig notation of your interface.
-  https://github.com/Raynos/jsig
--->
-```ocaml
-eslint-plugin-perf-standard := (arg: Any) => void
+This disables the common anti-pattern of:
+
+```js
+function Foo() {
+  if (!(this instanceof Foo)) return new Foo()
+}
 ```
 
-// TODO. State what the module does.
+### `no-self-in-constructor`
+
+This disables the ability to use `var self = this` in
+the body of a constructor function.
+
+For performance reasons we should use `this.foo = bar;` in
+constructors.
+
+Using `var self = this` in methods is fine.
+
+### `check-function-inline`
+
+This lint rule checks to see if a function is between 600
+and 660 characters and then warns that the function will not
+be inlined in V8.
 
 ## Installation
 
