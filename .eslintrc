@@ -1,0 +1,7 @@
+{
+    "extends": "perf-standard",
+    "rules": {
+        "spaced-comment": 0,
+        "max-len": 0
+    }
+}

@@ -11,32 +11,30 @@
     "url": "https://github.com/Raynos/eslint-plugin-perf-standard/issues",
     "email": "raynos2@gmail.com"
   },
-  "contributors": [{
-    "name": "Raynos"
-  }],
-  "dependencies": {
-  },
+  "contributors": [
+    {
+      "name": "Raynos"
+    }
+  ],
+  "dependencies": {},
   "devDependencies": {
-    "coveralls": "^2.10.0",
+    "eslint": "1.8.0",
+    "eslint-config-perf-standard": "2.0.0",
     "istanbul": "^0.3.5",
-    "lint-trap": "^1.0.0",
     "opn": "^1.0.1",
-    "pre-commit": "0.0.11",
-    "tap-spec": "^2.1.1",
     "tape": "^3.4.0"
   },
-  "licenses": [{
-    "type": "MIT",
-    "url": "http://github.com/Raynos/eslint-plugin-perf-standard/raw/master/LICENSE"
-  }],
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://github.com/Raynos/eslint-plugin-perf-standard/raw/master/LICENSE"
+    }
+  ],
   "scripts": {
-    "test": "npm run jshint -s && npm run cover -s",
+    "test": "npm run jshint -s && node test/index.js",
     "unit-test": "node test/index.js | tap-spec",
-    "jshint": "lint-trap .",
-    "cover": "istanbul cover --report html --print detail -- test/index.js && npm run check-cover -s",
-    "check-cover": "istanbul check-coverage --branches=100 --lines=100 --functions=100",
-    "view-cover": "opn ./coverage/index.html",
-    "travis": "npm run cover -s && istanbul report lcov && ((cat coverage/lcov.info | coveralls) || exit 0)"
+    "jshint": "eslint $(git ls-files | grep '.js$') && echo '# linter passed'",
+    "view-cover": "opn ./coverage/index.html"
   },
   "engine": {
     "node": ">= 0.8.x"

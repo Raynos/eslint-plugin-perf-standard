@@ -4,6 +4,7 @@ var console = require('console');
 var RuleTester = require('eslint').RuleTester;
 
 var noInstanceofGuard = require('../rules/no-instanceof-guard.js');
+var checkFunctionInline = require('../rules/check-function-inline.js');
 
 var ruleTester = new RuleTester();
 
@@ -29,5 +30,48 @@ ruleTester.run('no-instanceof-gaurd', noInstanceofGuard, {
     }]
 });
 
+var smallSrc = 'var foo = "' + buildStr(290) + '";';
+var largeSrc = 'var foo = "' + buildStr(580) + '";';
+
+ruleTester.run('check-function-inline', checkFunctionInline, {
+    valid: [
+        [
+            'function foo() {',
+            '    ' + smallSrc,
+            '}'
+        ].join('\n')
+    ],
+    invalid: [{
+        code: [
+            'function foo() {',
+            '    ' + largeSrc,
+            '}'
+        ].join('\n'),
+        errors: [{
+            message: 'Function exceeds default limit by 16 characters'
+        }]
+    }, {
+        code: [
+            'function foo() {',
+            '    // ' + smallSrc,
+            '    ' + smallSrc,
+            '}'
+        ].join('\n'),
+        errors: [{
+            message: 'Function exceeds default limit by 37 characters'
+        }]
+    }]
+});
+
 /*eslint no-console: 0*/
 console.log('ok');
+
+function buildStr(len) {
+    var chars = [];
+
+    for (var i = 0; i < len; i++) {
+        chars[i] = 'a';
+    }
+
+    return chars.join('');
+}
