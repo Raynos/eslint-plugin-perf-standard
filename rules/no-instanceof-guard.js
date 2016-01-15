@@ -10,7 +10,7 @@ function noInstanceofGuard(context) {
                 (node.parent && node.parent.operator === '!')
             ) {
                 context.report(
-                    node, 'expected no instanceof gaurd in constructor'
+                    node, 'expected no instanceof guard in constructor'
                 );
             }
         }
