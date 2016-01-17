@@ -12,13 +12,18 @@ function noInstanceofGuard(context) {
         }
     };
 
-    /*eslint max-statements: [2, 40]*/
+    /*eslint max-statements: [2, 40], complexity: [2, 15]*/
     function checkForOnelineClosure(node) {
         var parent = findParent(node, [
             'FunctionDeclaration',
             'FunctionExpression'
         ]);
         if (!parent) {
+            return null;
+        }
+
+        var isTapeCall = findTapeCall(node);
+        if (isTapeCall) {
             return null;
         }
 
@@ -30,6 +35,11 @@ function noInstanceofGuard(context) {
         var statements = funcBody.body;
         if (statements.length > 1) {
             return context.report(node, 'expected oneline closure');
+        }
+
+        // Special case for function noop() {}
+        if (statements.length === 0) {
+            return null;
         }
 
         var expr = statements[0];
@@ -95,4 +105,46 @@ function findParent(node, types) {
     }
 
     return candidate;
+}
+
+function findLastParent(node, types) {
+    var parent = node;
+    var candidate = null;
+
+    while (parent && parent.parent) {
+        parent = parent.parent;
+
+        if (types.indexOf(parent.type) >= 0) {
+            candidate = parent;
+        }
+    }
+
+    return candidate;
+}
+
+function findTapeCall(node) {
+    var callExpr = findLastParent(node, ['CallExpression']);
+    if (!callExpr) {
+        return false;
+    }
+
+    var callee = callExpr.callee;
+    if (callee.type === 'Identifier' && callee.name !== 'test') {
+        return false;
+    }
+
+    if (callee.type === 'MemberExpression' &&
+        callee.property.name !== 'test'
+    ) {
+        return false;
+    }
+
+    var args = callExpr.arguments;
+    if (args[0].type !== 'Literal' ||
+        typeof args[0].value !== 'string'
+    ) {
+        return false;
+    }
+
+    return true;
 }
