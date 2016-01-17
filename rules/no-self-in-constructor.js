@@ -6,8 +6,8 @@ module.exports = noSelfInConstructor;
 
 function noSelfInConstructor(context) {
     return {
-        'VariableDeclarator': function checkSelf(node) {
-            if (!isVarSelfThis(node)) {
+        'AssignmentExpression': function checkSelf(node) {
+            if (!isAssignmentToSelf(node)) {
                 return;
             }
 
@@ -24,7 +24,7 @@ function noSelfInConstructor(context) {
                 return;
             }
 
-            var msg = 'expected no self = this in constructor ' + name;
+            var msg = 'expected no self.foo = bar in constructor ' + name;
             context.report(node, msg);
         }
     };
@@ -48,7 +48,7 @@ function findParent(node, types) {
     return candidate;
 }
 
-function isVarSelfThis(node) {
-    return (node.id && node.id.name === 'self') &&
-        (node.init && node.init.type === 'ThisExpression');
+function isAssignmentToSelf(node) {
+    return (node.left && node.left.type === 'MemberExpression') &&
+        (node.left.object && node.left.object.name === 'self');
 }

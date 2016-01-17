@@ -87,7 +87,7 @@ ruleTester.run('no-self-in-constructor', noSelfInConstructor, {
             '}'
         ].join('\n'),
         errors: [{
-            message: 'expected no self = this in constructor Foo'
+            message: 'expected no self.foo = bar in constructor Foo'
         }]
     }, {
         code: [
@@ -97,7 +97,7 @@ ruleTester.run('no-self-in-constructor', noSelfInConstructor, {
             '};'
         ].join('\n'),
         errors: [{
-            message: 'expected no self = this in constructor Foo'
+            message: 'expected no self.foo = bar in constructor Foo'
         }]
     }]
 });
