@@ -6,6 +6,7 @@ var RuleTester = require('eslint').RuleTester;
 var noInstanceofGuard = require('../rules/no-instanceof-guard.js');
 var noSelfInConstructor = require('../rules/no-self-in-constructor.js');
 var checkFunctionInline = require('../rules/check-function-inline.js');
+var oneLineClosure = require('../rules/one-line-closure.js');
 
 var ruleTester = new RuleTester();
 
@@ -97,6 +98,85 @@ ruleTester.run('no-self-in-constructor', noSelfInConstructor, {
         ].join('\n'),
         errors: [{
             message: 'expected no self = this in constructor Foo'
+        }]
+    }]
+});
+
+ruleTester.run('one-line-closure', oneLineClosure, {
+    valid: [
+        [
+            'Foo.prototype.bar = function bar() {',
+            '    var self = this;',
+            '',
+            '    self._someClosure = _someClosure;',
+            '',
+            '    function _someClosure(bar) {',
+            '        self.baz(bar);',
+            '    }',
+            '};'
+        ].join('\n')
+    ],
+    invalid: [{
+        code: [
+            'Foo.prototype.bar = function bar() {',
+            '    var self = this;',
+            '',
+            '    self._someClosure = _someClosure;',
+            '',
+            '    function _someClosure(bar) {',
+            '        var foo = "4";',
+            '        console.log(foo);',
+            '    }',
+            '};'
+        ].join('\n'),
+        errors: [{
+            message: 'expected oneline closure'
+        }]
+    }, {
+        code: [
+            'Foo.prototype.bar = function bar() {',
+            '    var self = this;',
+            '',
+            '    self._someClosure = _someClosure;',
+            '',
+            '    function _someClosure(bar) {',
+            '        var foo = "4";',
+            '    }',
+            '};'
+        ].join('\n'),
+        errors: [{
+            message: 'expected a single expression in closure'
+        }]
+    }, {
+        code: [
+            'Foo.prototype.bar = function bar() {',
+            '    var self = this;',
+            '',
+            '    self._someClosure = _someClosure;',
+            '',
+            '    function _someClosure(bar) {',
+            '        console.log("4")',
+            '    }',
+            '};'
+        ].join('\n'),
+        errors: [{
+            message: 'expected method call to be on `self`'
+        }]
+    }, {
+        code: [
+            'Foo.prototype.bar = function bar() {',
+            '    var self = this;',
+            '    var foo = "bar"',
+            '',
+            '    self._someClosure = _someClosure;',
+            '',
+            '    function _someClosure(bar) {',
+            '        self.wat(foo, bar)',
+            '    }',
+            '};'
+        ].join('\n'),
+        errors: [{
+            message: 'expected closure to only close over `self`.'
         }]
     }]
 });
