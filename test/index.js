@@ -6,6 +6,7 @@ var RuleTester = require('eslint').RuleTester;
 var noInstanceofGuard = require('../rules/no-instanceof-guard.js');
 var noSelfInConstructor = require('../rules/no-self-in-constructor.js');
 var checkFunctionInline = require('../rules/check-function-inline.js');
+var noArrayIterators = require('../rules/no-array-iterators.js');
 
 var ruleTester = new RuleTester();
 
@@ -97,6 +98,41 @@ ruleTester.run('no-self-in-constructor', noSelfInConstructor, {
         ].join('\n'),
         errors: [{
             message: 'expected no self.foo = bar in constructor Foo'
+        }]
+    }]
+});
+
+ruleTester.run('no-array-iterators', noArrayIterators, {
+    valid: [
+        [
+            'var arr = [1,2,3];',
+            'var result = [];',
+            'for (var i = 0; i < arr.length; i++) {',
+            '    result.push(arr[i] * 2);',
+            '}'
+        ].join('\n'),
+        [
+            'var foo = new Foo()',
+            'foo.filter(42)'
+        ].join('\n')
+    ],
+    invalid: [{
+        code: [
+            'var arr = [1,2,3];',
+            'var result = arr.map(function pig(x) {',
+            '    return x * 2;',
+            '});'
+        ].join('\n'),
+        errors: [{
+            message: 'no array iterators allowed'
+        }]
+    }, {
+        code: [
+            'var arr = [1,2,3];',
+            'var result = arr.map(pig);'
+        ].join('\n'),
+        errors: [{
+            message: 'no array iterators allowed'
         }]
     }]
 });
