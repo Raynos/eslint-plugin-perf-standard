@@ -19,7 +19,7 @@
   "dependencies": {},
   "devDependencies": {
     "eslint": "1.8.0",
-    "eslint-config-perf-standard": "2.0.0",
+    "eslint-config-perf-standard": "^2.0.0",
     "istanbul": "^0.3.5",
     "opn": "^1.0.1",
     "tape": "^3.4.0"
