@@ -27,7 +27,7 @@ ruleTester.run('no-instanceof-gaurd', noInstanceofGuard, {
             '}'
         ].join('\n'),
         errors: [{
-            message: 'expected no instanceof gaurd in constructor'
+            message: 'expected no instanceof guard in constructor'
         }]
     }]
 });
